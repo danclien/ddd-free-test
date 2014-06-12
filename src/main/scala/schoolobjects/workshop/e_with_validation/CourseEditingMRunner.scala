@@ -8,23 +8,14 @@ import Id.Id
 import scala.slick.driver.PostgresDriver.simple._
 
 import CourseEditingM._
-import schoolobjects.SchoolObjects.Free._
+import schoolobjects.SchoolObjects.FreeFunctions._
 
 import schoolobjects.workshop.database._
-import schoolobjects.workshop.models._
+import schoolobjects.workshop.e_models._
 
 class CourseEditingMRunner(val session: Session) {
 
   def run[A](program: CourseEditingM[A]): \/[Throwable, A] = {
-    val validationResult: \/[NonEmptyList[String], A] = CourseEditingMValidation.validate(program)
-
-    validationResult match {
-      case \/-(a) => runM(program)
-      case -\/(e) => -\/(new Exception(e.list.mkString(", ")))
-    }
-  }
-
-  private def runM[A](program: CourseEditingM[A]): \/[Throwable, A] = {
     \/.fromTryCatch { 
       session.withTransaction {
         val result = runFC(program.run)(toIO).unsafePerformIO

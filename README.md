@@ -16,21 +16,31 @@
 #### Changes
 
 * The "error" type for `CourseEditingM` changed to a NonEmptyList[String]
-* Added separate interpreter for validation
-* Changed `CourseEditingMRunner.run` to run the new validation interpreter first
+* Encoded validations in types found in `schoolobjects.framework.validation.Types`
+  * Updated models in `schoolobjects.workshop.e_models` to use `String256` and `String1024` 
+* Added example code in `e_CourseEditingCoyonedaEitherTRepoValidationSpec.scala`
+
 
 #### Notes
 
-This didn't work out as well as I would have hoped.
+* Validation can be done in two places
+  * Model validation for an individual `Course`, `Activity`, etc. can be done by using the `Course.create` and `Activity.create` functions.
+  * Validations that depend on previous/future actions can be done in `CourseEditingMRunner`
+* Code in the controller would probably look similar to the "should verify multiple courses" test in `e_CourseEditingCoyonedaEitherTRepoValidationSpec.scala`
 
-I created a different "interpreter" for the `program` that does validation in `CourseEditingMValidation.scala`.
+#### Additional cleanup that can be done
 
-There's a few problems with this I can think of:
+* Organize type aliases
+  * Move type aliases for `Error` and `Result[A]` (`CourseEditingM.scala`) to an `object` in `schoolobjects.framework`
+  * Other aliases should be standardized into a location too
+* Change `String256` and `String1024` to be `class` instead of `case class`
+* Implement `object` for `String256` and `String1024` with methods:
+  * `def apply(value: String): String256` – should throw an exception if the input string is too long
+  * `def try(value: String): ValidationNel[String, String256]` should validate and return `Success` or `Failure`
+* Try to implement a parent class for `String256` and `String1024` to clean up code
 
-* Each step must return valid values like the actual interpreter
-* Each step is validated individually
-  * Makes it harder to do validation that applies to multiple steps
-  
+
+
 
 ### Recommended project organization/naming?
 

@@ -7,13 +7,13 @@ import scalaz.effect._
 import scala.slick.driver.PostgresDriver.simple._
 
 import schoolobjects.workshop.database._
-import schoolobjects.workshop.models._
+import schoolobjects.workshop.e_models._
 
 class CourseEditingRepo(val session: Session) {
   implicit val s = session
 
   def createCourse(course: Course) = {
-    val id = Courses.insert(CourseRow(0, course.title, course.description, "enabled"))
+    val id = Courses.insert(CourseRow(0, course.title.value, course.description.value, "enabled"))
     course.copy(id=Some(id))
   }
 

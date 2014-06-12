@@ -21,18 +21,3 @@ trait Validation {
 }
 
 
-// class String256(val value: String) extends AnyVal
-// object String256 {
-//   def fromString(value: String): Option[String256] = {
-//     if(value.length > 256) None
-//     else new Some(new String256(value))
-//   }
-// }
-
-// class String1024(val value: String) extends AnyVal
-// object String1024 {
-//   def fromString(value: String): Option[String1024] = {
-//     if(value.length > 1024) None
-//     else new Some(new String1024(value))
-//   }  
-// }

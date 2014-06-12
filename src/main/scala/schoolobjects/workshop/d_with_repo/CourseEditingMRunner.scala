@@ -7,7 +7,7 @@ import scalaz.effect._
 import scala.slick.driver.PostgresDriver.simple._
 
 import CourseEditingM._
-import schoolobjects.SchoolObjects.Free._
+import schoolobjects.SchoolObjects.FreeFunctions._
 
 import schoolobjects.workshop.database._
 import schoolobjects.workshop.models._

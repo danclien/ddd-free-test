@@ -3,7 +3,7 @@ package schoolobjects.workshop.e_with_validation
 import scalaz._, Scalaz._, Free._
 import schoolobjects._
 
-import workshop.models._
+import workshop.e_models._
 
 object CourseEditingM {
   type Error = NonEmptyList[String]

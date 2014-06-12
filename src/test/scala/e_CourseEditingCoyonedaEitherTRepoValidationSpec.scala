@@ -1,12 +1,14 @@
-import scalaz.{\/, \/-, -\/}
+import scalaz._, Scalaz._
 
 import org.scalatest._
 
 import schoolobjects.framework.testing._
-
 import schoolobjects.framework.configuration._
 import schoolobjects.framework.database._
-import schoolobjects.workshop.models._
+
+import schoolobjects._, SchoolObjects.Validation._
+
+import schoolobjects.workshop.e_models._
 import schoolobjects.workshop.e_with_validation._, CourseEditingM._
 
 class CourseEditingCoyonedaEitherTRepoValidationSpec extends FunSpec with Matchers with IntegrationSpec {
@@ -21,30 +23,54 @@ class CourseEditingCoyonedaEitherTRepoValidationSpec extends FunSpec with Matche
       result shouldBe a [-\/[_]]
     }
 
-    it("should create a course") {
-      val course = Course(None, "Create course test", "My course description", List())
-      val program = for (newCourse <- createCourse(course)) yield newCourse
+    it("should create a course") {      
+      // Raw values
+      val title = "Create course test"
+      val description = "My course description"
 
-      database.withSession { session =>
-        val courseEditingRunner = new CourseEditingMRunner(session)       
-        val result = courseEditingRunner.run(program) 
+      // Validated course creation
+      val courseValidation: ValidationResult[Course] = Course.create(title, description, List())
 
-        result shouldBe a [\/-[_]]
+      // Run if it's a valid course        
+      def onValid(course: Course) = {
+        val program = for (newCourse <- createCourse(course)) yield newCourse
+
+        database.withSession { session =>
+          val courseEditingRunner = new CourseEditingMRunner(session)       
+          courseEditingRunner.run(program) 
+        }        
       }
+
+      // Similar to (a |@| b) { onValid }, but with only one validation result
+      val result = courseValidation.map { onValid }
+
+      // Asserts
+      result shouldBe a [Success[_]]
+      result.map(r => r shouldBe a [\/-[_]])
     }
 
     it("should not create an invalid course") {
-      val longTitle = List.fill(1000)("Course title").toString
-      val course = Course(None, longTitle, "My course description", List())
+      // Raw values
+      val longTitle = List.fill(1000)("X").mkString("")
+      val description = "My course description"
 
-      val program = for (newCourse <- createCourse(course)) yield newCourse
+      // Validated course creation
+      val courseValidation = Course.create(longTitle, description, List())
 
-      database.withSession { session =>
-        val courseEditingRunner = new CourseEditingMRunner(session)       
-        val result = courseEditingRunner.run(program) 
+      // Run if it's a valid course        
+      def onValid(course: Course) = {
+        val program = for (newCourse <- createCourse(course)) yield newCourse
 
-        result shouldBe a [-\/[_]]
+        database.withSession { session =>
+          val courseEditingRunner = new CourseEditingMRunner(session)       
+          courseEditingRunner.run(program) 
+        }        
       }
+
+      val result = courseValidation.map { onValid }
+
+      // Asserts      
+      result shouldBe a [Failure[_]]      
     }    
 
     it("should get a course") {
@@ -59,20 +85,59 @@ class CourseEditingCoyonedaEitherTRepoValidationSpec extends FunSpec with Matche
     }
 
     it("should create course + get course = same course") {
-      val course = Course(None, "Create+GetCourse test", "My course description", List())      
-      val program = for {
-        newCourse <- createCourse(course)
-        readCourse <- { getCourse(newCourse.id.get) }
-      } yield (newCourse, readCourse)
+      // Raw values
+      val title = "Create+GetCourse test"
+      val description = "My course description"
 
-      database.withSession { session =>
-        val courseEditingRunner = new CourseEditingMRunner(session)         
-        val result = courseEditingRunner.run(program) 
+      // Validated course creation
+      val courseValidation: ValidationResult[Course] = Course.create(title, description, List())
 
-        val coursesAreEqual = result.map(r => r._1 == r._2) 
+      // Run if it's a valid course
+      def onValid(course: Course) = {
+        val program = for {
+          newCourse <- createCourse(course)
+          readCourse <- { getCourse(newCourse.id.get) }
+        } yield (newCourse, readCourse)
 
-        coursesAreEqual should equal (\/-(true))
+        database.withSession { session =>
+          val courseEditingRunner = new CourseEditingMRunner(session)         
+          val result = courseEditingRunner.run(program) 
+
+          val coursesAreEqual = result.map(r => r._1 == r._2) 
+
+          coursesAreEqual should equal (\/-(true))
+        }
       }
-    }  
+
+      val result = courseValidation.map { onValid }
+      result shouldBe a [Success[_]]
+   }  
+
+    it("should verify multiple courses") {      
+      /* Arrange */
+      val title = "Create course test"      
+      val description = "My course description"
+      val longTitle = List.fill(1000)("X").mkString("")
+
+      /* Act */
+      val result = (
+        Course.create(title, description, List())       |@|
+        Course.create(longTitle, description, List())
+      ) { (c1, c2) =>
+
+        val program = for {
+          newCourse1 <- createCourse(c1)
+          newCourse2 <- createCourse(c2)
+        } yield (newCourse1, newCourse2)
+
+        database.withSession { session =>
+          new CourseEditingMRunner(session).run(program)
+        }
+
+      }
+
+      /* Assert */
+      result shouldBe a [Failure[_]]
+    }   
   }
 }
