@@ -1,17 +1,13 @@
 package schoolobjects.workshop.e_with_validation
 
-import scalaz._
-import scalaz.syntax.functor._
-import scalaz.effect._
-import Id.Id
-
+import scalaz._, effect._
 import scala.slick.driver.PostgresDriver.simple._
 
-import CourseEditingM._
-import schoolobjects.SchoolObjects.FreeFunctions._
-
+import schoolobjects.SchoolObjects.FreeFunctions.runFC
 import schoolobjects.workshop.database._
 import schoolobjects.workshop.e_models._
+
+import CourseEditingM._
 
 class CourseEditingMRunner(val session: Session) {
 

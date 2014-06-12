@@ -50,7 +50,6 @@ class CourseEditingCoyonedaEitherTRepoValidationSpec extends FunSpec with Matche
     }
 
     it("should not create an invalid course") {
-      // Raw values
       val longTitle = List.fill(1000)("X").mkString("")
       val description = "My course description"
 
@@ -85,15 +84,14 @@ class CourseEditingCoyonedaEitherTRepoValidationSpec extends FunSpec with Matche
     }
 
     it("should create course + get course = same course") {
-      // Raw values
+      /* Arrange */
       val title = "Create+GetCourse test"
       val description = "My course description"
 
-      // Validated course creation
-      val courseValidation: ValidationResult[Course] = Course.create(title, description, List())
+      /* Act */
+      val courseValidation = Course.create(title, description, List())
 
-      // Run if it's a valid course
-      def onValid(course: Course) = {
+      val result = courseValidation.map { course =>
         val program = for {
           newCourse <- createCourse(course)
           readCourse <- { getCourse(newCourse.id.get) }
@@ -106,10 +104,10 @@ class CourseEditingCoyonedaEitherTRepoValidationSpec extends FunSpec with Matche
           val coursesAreEqual = result.map(r => r._1 == r._2) 
 
           coursesAreEqual should equal (\/-(true))
-        }
+        }        
       }
 
-      val result = courseValidation.map { onValid }
+      /* Assert */
       result shouldBe a [Success[_]]
    }  
 
@@ -124,7 +122,6 @@ class CourseEditingCoyonedaEitherTRepoValidationSpec extends FunSpec with Matche
         Course.create(title, description, List())       |@|
         Course.create(longTitle, description, List())
       ) { (c1, c2) =>
-
         val program = for {
           newCourse1 <- createCourse(c1)
           newCourse2 <- createCourse(c2)
@@ -133,7 +130,6 @@ class CourseEditingCoyonedaEitherTRepoValidationSpec extends FunSpec with Matche
         database.withSession { session =>
           new CourseEditingMRunner(session).run(program)
         }
-
       }
 
       /* Assert */
