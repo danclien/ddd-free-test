@@ -1,14 +1,83 @@
 # Example Implmentation of Workshop using Free
 
-## Changes - June 11, 2014
+## June 12, 2014
+
+### Added a separate `CourseEditingRepo` in `d_with_repo`
+
+* Removed `implicit` on the `Session` parameter for `CourseEditingMRunner`
+  * Using `implicit` only where required by Slick
+* Takes in a `Session`
+  * Allows handling of transactions at a higher level 
+    * Probably in or near the controller
+    * Currently handled in `CourseEditingMRunner.run`
+
+### Added validation for `createCourse` in `e_with_validation`
+
+This didn't work out as well as I would have hoped.
+
+I created a different "interpreter" for the `program` that does validation in `CourseEditingMValidation.scala`.
+
+There's a few problems with this I can think of:
+
+* Each step must return valid values
+* Each step is validated individually
+  * Makes it harder to do validation that applies to multiple steps
+  
+
+### Recommended project organization/naming?
+
+###### Random thoughts
+
+Some point down the road, we should look over what the current models in the .NET stack is so we can organize our namespaces a bit better.
+
+We do have 500+ models so some type of namespacing will be necessary. I think many of the models will be used in multiple apps so organizing by apps would be a bit awkward.
+
+Organizing by a "context" may be the better options here, but we would need to come up with those contexts.
+
+
+#### Rename project `schoolobjects.core` to `schoolobjects`
+
+##### Namespaces
+
+```
+schooolobjects        
+  framework         - Utility functions
+  core              - User, Campus, Role, Right, etc.
+    database      - Slick tables and queries
+    models        - Domain models
+  aware
+    database      - Slick tables and queries
+    models        - Domain models
+  forethought
+    database      - Slick tables and queries
+    models        - Domain models
+  workshop
+    course_editing    - Bounded context for course editing
+    database      - Slick tables and queries
+    models        - Domain models
+```
+
+#### Naming for Play/web projects
+
+`schoolobjects.aware.web`
+`schoolobjects.forethought.web`
+`schoolobjects.workshop.web`
+
+## June 11, 2014
 
 ### Added implementations using `Coyoneda` and `EitherT`
 
-* No need to manually write out the instance of `Functor` anymore
-* Added ability to short-circuit processing at any step
+* `Coyoneda` – No need to manually write out the instance of `Functor` anymore
+* `EitherT` – Added ability to short-circuit processing at any step
 
+### Switches to ScalaTest
 
-## Changes - June 10, 2014
+* Switches to `ScalaTest` to avoid `scalaz` conficts that `specs2` was causing
+  * Using `scalaz` 7.1.0-M7 in `ddd-free-test`
+  * specs2 relies on `scalaz` 7.0.2
+ 
+
+## June 10, 2014
 
 ### Use `TableQuery` `object`s
 
@@ -115,33 +184,6 @@ Plain objects are more flexible.
 
 Bounded contexts can be done using Free or other methods.
 
-### Added transactions hanlding
+### Added transactions handling
 
 Use a Free interpreter to handle transactions
-
-### Namespace models/database entries
-
-Possibly even adding an additional namespace under `database` and `models`.
-
-```
-schooolobjects.core       - Project
-  framework           - Utility functions
-  aware
-    database          - Slick tables and queries
-    models            - Domain models
-  forethought
-    database          - Slick tables and queries
-    models            - Domain models
-  workshop
-    course_editing            - Bounded context for course editing
-    database          - Slick tables and queries
-    models            - Domain models
-    
-schoolobjects.aware.web       – Project (web project)
-
-schoolobjects.forethought.web – Project (web project)
-
-schoolobjects.workshop.web    – Project (web project)
-
-  
-```

@@ -10,7 +10,6 @@ import database._, models._
 case class Course(id: Option[Int], title: String, description: String, activities: List[Activity])
 
 object Course {
-
   def fromDb(a: CourseRow) = {
     new Course(Some(a.id), a.title, a.description, List[Activity]())
   }  

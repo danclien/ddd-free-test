@@ -9,40 +9,7 @@ import schoolobjects.framework.database._
 import schoolobjects.workshop.models._
 import schoolobjects.workshop.a_course_editing._, CourseEditingM._
 
-
-// class SetSpec extends FunSpec {
-
-//   describe("A Set") {
-//     describe("when empty") {
-//       it("should have size 0") {
-//         assert(Set.empty.size == 0)
-//       }
-
-//       it("should produce NoSuchElementException when head is invoked") {
-//         intercept[NoSuchElementException] {
-//           Set.empty.head
-//         }
-//       }
-//     }
-//   }
-// }
-
 class CourseEditingSpec extends FunSpec with Matchers with IntegrationSpec {
-
-  // "A Stack" should "pop values in last-in-first-out order" in {
-  //   val stack = new Stack[Int]
-  //   stack.push(1)
-  //   stack.push(2)
-  //   stack.pop() should be (2)
-  //   stack.pop() should be (1)
-  // }
-
-  // it should "throw NoSuchElementException if an empty stack is popped" in {
-  //   val emptyStack = new Stack[Int]
-  //   a [NoSuchElementException] should be thrownBy {
-  //     emptyStack.pop()
-  //   } 
-  // }
 
   describe("CourseEditingM") {
     it("should print a chain of commands") {
