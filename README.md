@@ -13,13 +13,21 @@
 
 ### Added validation for `createCourse` in `e_with_validation`
 
+#### Changes
+
+* The "error" type for `CourseEditingM` changed to a NonEmptyList[String]
+* Added separate interpreter for validation
+* Changed `CourseEditingMRunner.run` to run the new validation interpreter first
+
+#### Notes
+
 This didn't work out as well as I would have hoped.
 
 I created a different "interpreter" for the `program` that does validation in `CourseEditingMValidation.scala`.
 
 There's a few problems with this I can think of:
 
-* Each step must return valid values
+* Each step must return valid values like the actual interpreter
 * Each step is validated individually
   * Makes it harder to do validation that applies to multiple steps
   
