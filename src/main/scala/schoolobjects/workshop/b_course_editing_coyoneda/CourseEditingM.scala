@@ -27,9 +27,4 @@ object CourseEditingM {
   def addActivity(course: Course, activity: Activity) = liftFC { AddActivity(course, activity) }
   def setActivity(course: Course, activity: Activity)= liftFC { SetActivity(course, activity) }
   def removeActivity(course: Course, activity: Activity) = liftFC { RemoveActivity(course, activity)}
-
-  def runM[A, M[_]: Monad](tio: CourseEditingFreeM[A])(interpreter: CourseEditingF ~> M): M[A] = tio.foldMap[M](new (CourseEditingCoyoneda ~> M) {
-    def apply[A](cy: CourseEditingCoyoneda[A]): M[A] =
-      interpreter(cy.fi).map(cy.k)
-  })
 }

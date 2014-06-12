@@ -9,8 +9,6 @@ import CourseEditingM._
 import schoolobjects.workshop.database._
 import schoolobjects.workshop.models._
 
-
-
 class CourseEditingRunner(implicit val session: Session) {
 
   def run[A](program: CourseEditingFreeM[A]): \/[Throwable, A] = {

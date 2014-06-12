@@ -7,6 +7,7 @@ import scalaz.effect._
 import scala.slick.driver.PostgresDriver.simple._
 
 import CourseEditingM._
+import schoolobjects.SchoolObjects.Free._
 
 import schoolobjects.workshop.database._
 import schoolobjects.workshop.models._
@@ -16,7 +17,7 @@ class CourseEditingMRunner(implicit val session: Session) {
   def run[A](program: CourseEditingM[A]): \/[Throwable, A] = {
     \/.fromTryCatch { 
       session.withTransaction {
-        val result = runM(program.run)(toIO).unsafePerformIO
+        val result = runFC(program.run)(toIO).unsafePerformIO
 
         result match {
           case \/-(success) => success
