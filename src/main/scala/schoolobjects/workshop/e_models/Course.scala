@@ -20,8 +20,8 @@ object Course {
     (
       string256(title, "Title") |@| 
       string1024(description, "Description")
-    ) { (title, desc) => 
-      Course(None, title, desc, activities) 
+    ) { 
+      Course(None, _, _, activities) 
     }
   }
 }

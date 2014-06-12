@@ -20,15 +20,30 @@
   * Updated models in `schoolobjects.workshop.e_models` to use `String256` and `String1024` 
 * Added example code in `e_CourseEditingCoyonedaEitherTRepoValidationSpec.scala`
 
+#### Examples
 
-#### Notes
+##### Values with validation (e.g. `String256`)
+
+* `schoolobjects.framework.validation.Types` shows how the types are created.
+* `schoolobjects.workshop.e_models.Course` shows how the validated string types are used in the `case class`
+
+##### Valid models
+
+* `schoolobjects.workshop.e_models.Course` has a `create` method that can create a new Course that's valid.
+
+##### How to use everything together
+
+* `e_CourseEditingCoyonedaEitherTRepoValidationSpec.scala`'s test cases show off how the code can be used.
+* The last test case, `""should fail validation if a single course is invalid in multiple courses""`, would be the closest to what we woud use in production.
+
+#### Other Notes
 
 * Validation can be done in two places
   * Model validation for an individual `Course`, `Activity`, etc. can be done by using the `Course.create` and `Activity.create` functions.
   * Validations that depend on previous/future actions can be done in `CourseEditingMRunner`
-* Code in the controller would probably look similar to the "should verify multiple courses" test in `e_CourseEditingCoyonedaEitherTRepoValidationSpec.scala`
 
-#### Additional cleanup that can be done
+
+##### Additional cleanup that can be done
 
 * Organize type aliases
   * Move type aliases for `Error` and `Result[A]` (`CourseEditingM.scala`) to an `object` in `schoolobjects.framework`

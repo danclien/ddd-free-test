@@ -49,7 +49,7 @@ class CourseEditingCoyonedaEitherTRepoValidationSpec extends FunSpec with Matche
       result.map(r => r shouldBe a [\/-[_]])
     }
 
-    it("should not create an invalid course") {
+    it("should return a validation error for an invalid course") {
       val longTitle = List.fill(1000)("X").mkString("")
       val description = "My course description"
 
@@ -111,7 +111,7 @@ class CourseEditingCoyonedaEitherTRepoValidationSpec extends FunSpec with Matche
       result shouldBe a [Success[_]]
    }  
 
-    it("should verify multiple courses") {      
+    it("should fail validation if a single course is invalid in multiple courses") {      
       /* Arrange */
       val title = "Create course test"      
       val description = "My course description"
